@@ -1,15 +1,18 @@
 Package: smd
 Type: Package
 Title: Compute Standardized Mean Differences
-Version: 0.6.6
+Version: 0.6.7
 Authors@R: c(person("Bradley", "Saul", role = c("aut", "cre"), 
-                    email = "bsaul@novisci.com"),
+                    email = "bradleysaul@fastmail.com"),
              person("Alex", "Breskin", role = c("ctb"), 
-                    email = "abreskin@novisci.com"),
+                    email = "alexbreskin@gmail.com"),
              person("Catie", "Wiener", role = c("ctb"), 
-                    email = "cwiener@novisci.com"),
+                    email = "cwiener@live.unc.edu"),
              person("Matt", "Phelan", role = c("ctb"), 
-                    email = "mphelan@novisci.com"))
+                    email = "mpphelan1@gmail.com"),
+             person("Daniel", "Sjoberg", role = c("ctb"),
+                    email = "danield.sjoberg@gmail.com")
+             )
 Description: Computes standardized mean differences and confidence intervals for 
     multiple data types based on Yang, D., & Dalton, J. E. (2012) 
     <http://www.lerner.ccf.org/qhs/software/lib/stddiff.pdf>. 
@@ -17,18 +20,18 @@ Imports: MASS (>= 7.3-50), methods (>= 3.5.1)
 Suggests: testthat, stddiff, tableone, knitr, dplyr, purrr, markdown,
         rmarkdown
 License: MIT + file LICENSE
-URL: https://docs.novisci.com/smd/
-BugReports: https://gitlab.novisci.com/nsstat/smd/issues
+URL: https://bsaul.github.io/smd/
+BugReports: https://github.com/bsaul/smd/issues
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Repository: CRAN
 NeedsCompilation: no
-Packaged: 2020-10-13 20:13:52 UTC; bsaul
+Packaged: 2024-03-28 17:34:40 UTC; nixbld
 Author: Bradley Saul [aut, cre],
   Alex Breskin [ctb],
   Catie Wiener [ctb],
-  Matt Phelan [ctb]
-Maintainer: Bradley Saul <bsaul@novisci.com>
-Date/Publication: 2020-10-22 09:20:02 UTC
+  Matt Phelan [ctb],
+  Daniel Sjoberg [ctb]
+Maintainer: Bradley Saul <bradleysaul@fastmail.com>
+Date/Publication: 2024-03-29 03:10:05 UTC
