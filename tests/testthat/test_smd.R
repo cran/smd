@@ -1,21 +1,16 @@
 context("Testing the smd() functions")
 
-for(i in seq_along(dg)){
-
-
-
+for (i in seq_along(dg)) {
   test_that(sprintf("smd() matches other packages for %s values", dg[[i]]$type), {
-
     skip_on_ci()
     skip_on_cran()
 
     dt <- data.frame(
-        g = rep(c("A", "B"), each = 30),
-        x = dg[[i]]$x
-      )
+      g = rep(c("A", "B"), each = 30),
+      x = dg[[i]]$x
+    )
     compare_packages(dt)
   })
-
 }
 
 test_that("smd() returns correct values in specific cases", {
@@ -24,29 +19,35 @@ test_that("smd() returns correct values in specific cases", {
   w <- rep(0:1, each = 5)
   # means in both groups are 0; some weights are 0;
   expect_equal(smd(x, g, w)$estimate, 0)
+  expect_equal(smd(x, g, w, unwgt.var = FALSE)$estimate, 0)
 
   # means in one group is not 0; some weights are 0;
   x <- rep(0:1, times = c(7, 3))
   gBx <- c(0, 0, 1, 1, 1)
-  expect_equal(smd(x, g, w)$estimate, -0.6/sqrt((var(gBx) * 4 /5)/ 2))
+  expect_equal(smd(x, g, w)$estimate, -0.6 / sqrt((var(gBx) * 4 / 5) / 2))
+  expect_equal(smd(x, g, w, unwgt.var = FALSE)$estimate, -0.6 / sqrt((var(gBx) * 4 / 5) / 2))
 
   # means in one group is not 0; some weights are 0;
   x <- rep(0:1, times = c(7, 3))
   w <- rep(0:1, times = c(6, 4))
   gBx <- c(0, 0, 1, 1, 1)
-  expect_equal(smd(x, g, w)$estimate, -0.75/sqrt( (sum(w[6:10]*(gBx - 0.75)^2)/4)/2) )
+  expect_equal(smd(x, g, w)$estimate, -0.75 / sqrt((var(gBx) * 4 / 5) / 2))
+  expect_equal(smd(x, g, w, unwgt.var = FALSE)$estimate, -0.75 / sqrt((sum(w[6:10] * (gBx - 0.75)^2) / 4) / 2))
+
 
   # means in one group is not 0; some weights are 0;
   x <- rep(0:1, times = c(7, 3))
   w <- c(rep(0:1, times = c(6, 3)), 0)
   gBx <- c(0, 0, 1, 1, 1)
-  expect_equal(smd(x, g, w)$estimate, -(2/3)/sqrt( (sum(w[6:10]*(gBx - (2/3))^2)/3)/2) )
+  expect_equal(smd(x, g, w)$estimate, -(2 / 3) / sqrt((var(gBx) * 4 / 5) / 2))
+  expect_equal(smd(x, g, w, unwgt.var = FALSE)$estimate, -(2 / 3) / sqrt((sum(w[6:10] * (gBx - (2 / 3))^2) / 3) / 2))
 
   # means in both group is not 0; some weights are 0;
   x <- rep(c(0, 1, 1, 1, 1), times = 2)
   w <- rep(c(0, 1, 1, 1, 0), times = 2)
 
   expect_equal(smd(x, g, w)$estimate, 0)
+  expect_equal(smd(x, g, w, unwgt.var = FALSE)$estimate, 0)
 
   ## Checking factors
   x <- factor(rep(LETTERS[1:4], times = 4))
@@ -54,13 +55,19 @@ test_that("smd() returns correct values in specific cases", {
   w <- c(rep(0:1, times = 4), rep(0:1, each = 4))
 
   ra <- c(0, .5, 0, .5)
+  ra_unw <- c(0.25, 0.25, 0.25, 0.25)
   SSa <- diag(ra) - outer(ra, ra)
+  SSa_unw <- diag(ra_unw) - outer(ra_unw, ra_unw)
   rb <- c(.25, .25, .25, 0.25)
+  rb_unw <- c(.25, .25, .25, 0.25)
   SSb <- diag(rb) - outer(rb, rb)
+  SSb_unw <- diag(rb_unw) - outer(rb_unw, rb_unw)
   d <- ra - rb
-  SS <- (SSa + SSb)/2
+  SS <- (SSa + SSb) / 2
+  SS_unw <- (SSa_unw + SSb_unw) / 2
 
-  expect_equal(sqrt(t(d) %*% (MASS::ginv(SS) %*% d)), smd(x, g, w)$estimate, check.attributes = FALSE)
+  expect_equal(sqrt(t(d) %*% (MASS::ginv(SS_unw) %*% d)), smd(x, g, w)$estimate, check.attributes = FALSE)
+  expect_equal(sqrt(t(d) %*% (MASS::ginv(SS) %*% d)), smd(x, g, w, unwgt.var = FALSE)$estimate, check.attributes = FALSE)
 
   w <- rep(0:1, each = 8)
   ra <- c(0, 0, 0, 0)
@@ -68,10 +75,10 @@ test_that("smd() returns correct values in specific cases", {
   rb <- c(.25, .25, .25, 0.25)
   SSb <- diag(rb) - outer(rb, rb)
   d <- ra - rb
-  SS <- (SSa + SSb)/2
+  SS <- (SSa + SSb) / 2
 
   expect_equal(sqrt(t(d) %*% (MASS::ginv(SS) %*% d)), smd(x, g, w)$estimate, check.attributes = FALSE)
-
+  expect_equal(sqrt(t(d) %*% (MASS::ginv(SS) %*% d)), smd(x, g, w, unwgt.var = FALSE)$estimate, check.attributes = FALSE)
 })
 
 
@@ -93,9 +100,11 @@ test_that("smd() works/does not as appropriate with lists", {
   # checking lists of different types
   expect_is(smd(x = purrr::map(dg, ~ .x$x), g = rep(c("A", "B"), each = 30)), "data.frame")
   expect_is(
-    smd(x = purrr::map(dg, ~ .x$x),
-        g = rep(c("A", "B"), each = 30),
-        w = rep(c(3.12, 1.47), 30)),
+    smd(
+      x = purrr::map(dg, ~ .x$x),
+      g = rep(c("A", "B"), each = 30),
+      w = rep(c(3.12, 1.47), 30)
+    ),
     "data.frame"
   )
 })
@@ -132,7 +141,6 @@ test_that("smd() runs if g is an unsorted grouping variable", {
   g <- rep(c("A", "B"), times = 20)
 
   expect_is(smd(x = x, g = g), "data.frame")
-
 })
 
 
@@ -151,7 +159,6 @@ test_that("smd() runs with NA values", {
   x[sample(1:60, 5)] <- NA
   expect_error(smd(x, g, na.rm = FALSE))
   expect_is(smd(x, g, na.rm = TRUE), "data.frame")
-
 })
 
 
@@ -180,7 +187,7 @@ test_that("smd() does not work with incorrectly specified gref (reference group)
 })
 
 
-for(i in c(1,3:length(dg))){
+for (i in c(1, 3:length(dg))) {
   # Skipping the integer check: this gives a check_for_two_levels warning()
   # TODO: how to do I want to handle this case?
   test_that(sprintf("smd() runs for various data type %s", dg[[i]]$type), {
@@ -189,11 +196,10 @@ for(i in c(1,3:length(dg))){
       x = dg[[i]]$x
     )
 
-   expect_is(smd(dt$x, dt$g, gref = 1), "data.frame")
-   expect_is(smd(dt$x, dt$g, gref = 2), "data.frame")
-   expect_is(smd(dt$x, dt$g, gref = 3), "data.frame")
+    expect_is(smd(dt$x, dt$g, gref = 1), "data.frame")
+    expect_is(smd(dt$x, dt$g, gref = 2), "data.frame")
+    expect_is(smd(dt$x, dt$g, gref = 3), "data.frame")
   })
-
 }
 
 test_that("smd() when factor has one level returns 0", {
@@ -248,4 +254,61 @@ test_that("smd(x, g, w) works when x is character or logical", {
     smd(x_lgl, g, w),
     smd(x_fct, g, w)
   )
+})
+
+test_that("smd() when factor has one level returns 0", {
+  x <- factor(rep("No", 10))
+  g <- factor(rep(c("Control", "Treat"), 5))
+  w <- rep(c(3.12, 1.47), 5)
+  expect_equal(smd(x, g)$estimate, 0)
+  expect_equal(smd(x, g, w)$estimate, 0)
+})
+
+
+test_that("smd() when character has one level returns 0", {
+  x <- rep("No", 10)
+  g <- factor(rep(c("Control", "Treat"), 5))
+  w <- rep(c(3.12, 1.47), 5)
+  expect_equal(smd(x, g)$estimate, 0)
+  expect_equal(smd(x, g, w)$estimate, 0)
+})
+
+
+test_that("smd() when two-level factor has one empty level returns 0", {
+  x <- factor(rep("No", 10), levels = c("No", "Yes"))
+  g <- factor(rep(c("Control", "Treat"), 5))
+  w <- rep(c(3.12, 1.47), 5)
+  expect_equal(smd(x, g)$estimate, 0)
+  expect_equal(smd(x, g, w)$estimate, 0)
+})
+
+
+test_that("smd() with two-level factor and one treatment group has an empty level", {
+  x <- factor(c(rep("No", 8), rep("Yes", 4), rep("No", 4)), levels = c("No", "Yes"))
+  g <- factor(c(rep("Control", 8), rep("Treat", 8)))
+  w <- rep(1, 16)
+  # Hand calculation of SMD
+  # Control mean =  a = [1 0]'
+  # Control var = c = diag(a) - outer(a,a) = [1 0; 0 0] - [1 0; 0 0] = [0 0; 0 0]
+  # Treat mean = b = [0.5 0.5]'
+  # Control var = d = diag(b) - outer(b,b) = [0.5 0; 0 0.5] - [0.25 0.25; 0.25 0.25] = [0.25 -0.25; -0.25 0.25]
+  # D = a - b = [0.5  -0.5]'
+  # S = (c + d)/2 = [0.125 -0.125; -0.125 0.125]
+  # S^-1 = [2 -2; -2 2]
+  # SMD = sqrt(D' S^-1 D)
+  # .    = sqrt([0.5 -0.5]*[2  -2]*[0.5]
+  #                       [-2  2] [-0.5])
+  # .    = sqrt([2 -2][ 0.5]
+  #                  [-0.5])
+  # .    = sqrt(2)
+  expect_equal(smd(x, g)$estimate, sqrt(2))
+  expect_equal(smd(x, g, w)$estimate, sqrt(2))
+})
+
+test_that("smd() with two-level character vector and one treatment group has an empty level", {
+  x <- c(rep("No", 8), rep("Yes", 4), rep("No", 4))
+  g <- c(rep("Control", 8), rep("Treat", 8))
+  w <- rep(1, 16)
+  expect_equal(smd(x, g)$estimate, sqrt(2))
+  expect_equal(smd(x, g, w)$estimate, sqrt(2))
 })

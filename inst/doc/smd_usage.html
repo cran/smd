@@ -12,7 +12,7 @@
 
 <meta name="author" content="Bradley Saul" />
 
-<meta name="date" content="2024-03-28" />
+<meta name="date" content="2024-05-06" />
 
 <title>Using smd</title>
 
@@ -363,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Using smd</h1>
 <h4 class="author">Bradley Saul</h4>
-<h4 class="date">2024-03-28</h4>
+<h4 class="date">2024-05-06</h4>
 
 
 
@@ -500,9 +500,10 @@ matrix.</p>
 <span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
 <span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">summarize_at</span>(</span>
 <span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>    <span class="at">.vars =</span> <span class="fu">vars</span>(dplyr<span class="sc">::</span><span class="fu">matches</span>(<span class="st">&quot;^x&quot;</span>)),</span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>    <span class="at">.funs =</span> <span class="fu">list</span>(<span class="at">smd =</span> <span class="sc">~</span> <span class="fu">smd</span>(., <span class="at">g =</span> g)<span class="sc">$</span>estimate))</span>
-<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt;       xn_smd    xi_smd    xc_smd    xf_smd xl_smd</span></span>
-<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; 1 0.03413269 0.1687339 0.1946887 0.1946887      0</span></span></code></pre></div>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>    <span class="at">.funs =</span> <span class="fu">list</span>(<span class="at">smd =</span> <span class="sc">~</span> <span class="fu">smd</span>(., <span class="at">g =</span> g)<span class="sc">$</span>estimate)</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  )</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt;       xn_smd    xi_smd    xc_smd    xf_smd xl_smd</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt; 1 0.03413269 0.1687339 0.1946887 0.1946887      0</span></span></code></pre></div>
 </div>
 </div>
 <div id="other-packages" class="section level1">
@@ -523,7 +524,7 @@ Meta-Analysis</em>.
 <div id="ref-yang2012unified" class="csl-entry">
 Yang, Dongsheng, and Jarrod E Dalton. 2012. <span>“A Unified Approach to
 Measuring the Effect Size Between Two Groups Using SAS”</span> 335: 1–6.
-<a href="http://www.lerner.ccf.org/qhs/software/lib/stddiff.pdf">http://www.lerner.ccf.org/qhs/software/lib/stddiff.pdf</a>.
+<a href="https://support.sas.com/resources/papers/proceedings12/335-2012.pdf">https://support.sas.com/resources/papers/proceedings12/335-2012.pdf</a>.
 </div>
 </div>
 </div>
